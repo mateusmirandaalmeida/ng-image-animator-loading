@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <title>Ng Image Animator</title>
+  </head>
+  <body ng-controller="ctrl">
+
+    <img animator-loading="https://goo.gl/dDSl4w?v=1496768735467"
+         background="#9B59B6"
+         width="200"
+         height="200"
+         style="border: 1px solid #ccc;"/>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+    <script type="text/javascript" src="dist/ng-image-animator-loading.js"></script>
+
+    <script type="text/javascript">
+      angular.module('app', ['ngImageAnimatorLoading']).controller('ctrl', function($scope){
+
+      })
+    </script>
+
+  </body>
+</html>

@@ -2,7 +2,7 @@
 require('./animator.css');
 
 //IMPORTS
-import Animator from  './animator';
+import { Animator } from  './animator';
 
 
 ((exports, angular) => {

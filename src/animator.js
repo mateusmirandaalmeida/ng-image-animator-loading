@@ -1,9 +1,33 @@
 class Animator {
 
-  contructor(){
+  constructor(){
+    'ngInject';
     this.restrict = 'A';
     this.scope = {};
     this.priority = 100;
+  }
+
+  $onInit() {
+  }
+
+  elementInViewport(el) {
+    let top = el.offsetTop,
+        left = el.offsetLeft,
+        width = el.offsetWidth,
+        height = el.offsetHeight;
+
+    while(el.offsetParent) {
+      el = el.offsetParent;
+      top += el.offsetTop;
+      left += el.offsetLeft;
+    }
+
+    return (
+      top < (window.pageYOffset + window.innerHeight) &&
+      left < (window.pageXOffset + window.innerWidth) &&
+      (top + height) > window.pageYOffset &&
+      (left + width) > window.pageXOffset
+    );
   }
 
   loadingElement(elm, animation, background){
@@ -16,23 +40,35 @@ class Animator {
 
   createImage(imageURL, callback){
     let img = new Image();
-        img.src = imageURL;
+    img.src = imageURL;
     img.onload = function() {
       callback(this);
     };
+    img.onerror = function(){
+      callback(this);
+    }
+  }
+
+  verifyElementAndLoad(elm, attrs, imageURL, background){
+    if(this.elementInViewport(elm) && !elm.src){
+      this.loadingElement(elm, attrs.animation, attrs.background);
+      this.createImage(imageURL, image => {
+        elm.src = image.src;
+        elm.style.background = background;
+      });
+    }
   }
 
   link(scope, element, attrs) {
     const elm  = element && element[0] ? element[0] : undefined,
                  imageURL = attrs.animatorLoading,
                  background = elm.style.background;
-    this.loadingElement(elm, attrs.animation, attrs.background);
-    this.createImage(imageURL, image => {
-      elm.src = image.src;
-      elm.style.background = background;
-    });
+    this.verifyElementAndLoad(elm, attrs, imageURL, background);
+    window.addEventListener("scroll", (evt) => this.verifyElementAndLoad(elm, attrs, imageURL, background));
   }
 
 }
 
-export default Animator;
+Animator.$inject = ['$window'];
+
+export { Animator }

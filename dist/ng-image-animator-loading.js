@@ -107,12 +107,37 @@ module.exports = function(originalModule) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Animator; });
 class Animator {
 
-  contructor(){
+  constructor(){
+    'ngInject';
     this.restrict = 'A';
     this.scope = {};
     this.priority = 100;
+  }
+
+  $onInit() {
+  }
+
+  elementInViewport(el) {
+    let top = el.offsetTop,
+        left = el.offsetLeft,
+        width = el.offsetWidth,
+        height = el.offsetHeight;
+
+    while(el.offsetParent) {
+      el = el.offsetParent;
+      top += el.offsetTop;
+      left += el.offsetLeft;
+    }
+
+    return (
+      top < (window.pageYOffset + window.innerHeight) &&
+      left < (window.pageXOffset + window.innerWidth) &&
+      (top + height) > window.pageYOffset &&
+      (left + width) > window.pageXOffset
+    );
   }
 
   loadingElement(elm, animation, background){
@@ -125,26 +150,38 @@ class Animator {
 
   createImage(imageURL, callback){
     let img = new Image();
-        img.src = imageURL;
+    img.src = imageURL;
     img.onload = function() {
       callback(this);
     };
+    img.onerror = function(){
+      callback(this);
+    }
+  }
+
+  verifyElementAndLoad(elm, attrs, imageURL, background){
+    if(this.elementInViewport(elm) && !elm.src){
+      this.loadingElement(elm, attrs.animation, attrs.background);
+      this.createImage(imageURL, image => {
+        elm.src = image.src;
+        elm.style.background = background;
+      });
+    }
   }
 
   link(scope, element, attrs) {
     const elm  = element && element[0] ? element[0] : undefined,
                  imageURL = attrs.animatorLoading,
                  background = elm.style.background;
-    this.loadingElement(elm, attrs.animation, attrs.background);
-    this.createImage(imageURL, image => {
-      elm.src = image.src;
-      elm.style.background = background;
-    });
+    this.verifyElementAndLoad(elm, attrs, imageURL, background);
+    window.addEventListener("scroll", (evt) => this.verifyElementAndLoad(elm, attrs, imageURL, background));
   }
 
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (Animator);
+Animator.$inject = ['$window'];
+
+
 
 
 /***/ }),
@@ -169,7 +206,7 @@ __webpack_require__(0);
 
   const ngImageAnimatorLoading = angular.module('ngImageAnimatorLoading', []);
 
-  ngImageAnimatorLoading.directive('animatorLoading', () => new __WEBPACK_IMPORTED_MODULE_0__animator__["a" /* default */]);
+  ngImageAnimatorLoading.directive('animatorLoading', () => new __WEBPACK_IMPORTED_MODULE_0__animator__["a" /* Animator */]);
 
   if(exports){
      exports = ngImageAnimatorLoading;

@@ -1,4 +1,4 @@
-# NgImageAnimatorLoading - AngularJs
+# NgImageAnimatorLoading - AngularJs   [Demo](https://mateusmirandaalmeida.github.io/ng-image-animator-loading/index.html)  
 
 [![N|Solid](http://www.cloudesign.com/images/angular.png)](https://nodesource.com/products/nsolid)
 
